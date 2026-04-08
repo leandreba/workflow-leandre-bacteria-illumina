@@ -8,7 +8,7 @@ workflow {
     main:
 
     //on crée notre channel de reads bruts
-    reads = channel.fromFilePairs("${params.input}*_R{1,2}_001*").view()
+    reads = channel.fromFilePairs("${params.input}/*_R{1,2}_001*").view()
     
     //on lance la première étape de qualité
     fastqc(reads)
@@ -29,7 +29,6 @@ workflow {
     spades_output = spades.out
 }
 
-
 //dire ou ranger les outputs de nos process
 output {
     fastqc_output {
@@ -43,4 +42,4 @@ output {
     spades_output {
         path {id, spades_results -> "${id}"}
     }
-}
+} 
