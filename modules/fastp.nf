@@ -12,5 +12,6 @@ process fastp{
     """
 
     output:
-    tuple val(id), path("*R1*"), path("*R2*"), path("*.html"), path("*.json")
+    tuple val(id), path("*R1*"), path("*R2*"), emit : clean_reads
+    tuple val(id), path("*.html"), path("*.json"), emit : reports
 }

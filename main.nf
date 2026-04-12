@@ -1,5 +1,6 @@
-include {fastqc} from './modules/fastqc.nf'
+include {fastqc as fastqc_raw} from './modules/fastqc.nf'
 include {fastp} from './modules/fastp.nf'
+include {fastqc as fastqc_clean} from './modules/fastqc.nf'
 include {spades} from './modules/spades.nf'
 
 //la base de notre worklfow on y appelle nos process
@@ -11,35 +12,41 @@ workflow {
     reads = channel.fromFilePairs("${params.input}/*_R{1,2}_001*").view()
     
     //on lance la première étape de qualité
-    fastqc(reads)
+    fastqc_raw(reads)
     fastp(reads)
 
     //On crée notre channel de reads cleans à partir de notre channel fastp
-    clean_reads = fastp.out.map {id, clean_R1, clean_R2, html, json -> tuple(id, [clean_R1, clean_R2])}
+    clean_reads = fastp.out.clean_reads.map {id, clean_R1, clean_R2 -> tuple(id, [clean_R1, clean_R2])}
     clean_reads.view()
 
     //on faitun nouveau fastqc à partir de nos reads clean
-    //fastqc(clean_reads)
-
+    fastqc_clean(clean_reads)
+ 
     spades(clean_reads)
 
     publish:
-    fastqc_output = fastqc.out
-    fastp_output = fastp.out
-    spades_output = spades.out
+    fastqc_raw_output = fastqc_raw.out
+    fastp_output = fastp.out.reports
+    fastqc_clean_output = fastqc_clean.out
+    spades_output = spades.out.reports
+
 }
 
 //dire ou ranger les outputs de nos process
 output {
-    fastqc_output {
-        path { id, html, zip -> "${id}/fastqc"}
+    fastqc_raw_output {
+        path { id, html, zip -> "${id}/fastqc_raw"}
     }
 
     fastp_output {
-        path {id, R1, R2, html, json -> "${id}/fastp"}
+        path {id, html, json -> "${id}/fastp"}
     }
 
+    fastqc_clean_output {
+            path { id, html, zip -> "${id}/fastqc_clean"}
+        }
+
     spades_output {
-        path {id, spades_results -> "${id}"}
+        path {id, sapdes_log , warnings_log -> "${id}"}
     }
-} 
+}  
