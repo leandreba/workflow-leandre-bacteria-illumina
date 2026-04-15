@@ -5,11 +5,11 @@ process fastqc {
 
     input:
     tuple val(id), path(reads)
-    
+    val(threads)
     script:
     
     """
-    fastqc --memory 2000 -t 8 '${reads[0]}' '${reads[1]}' 
+    fastqc --memory 2000 -t ${threads} '${reads[0]}' '${reads[1]}' 
     """
 
     output:

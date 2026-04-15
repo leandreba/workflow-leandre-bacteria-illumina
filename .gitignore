@@ -3,3 +3,4 @@ results/*/*
 .nextflow*
 containers/*
 .env
+db/*

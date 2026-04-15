@@ -4,11 +4,12 @@ process fastp{
 
     input:
     tuple val(id), path(reads)
+    val(threads)
 
     script:
     
     """
-    fastp -i ${reads[0]} -I ${reads[1]} -o clean_R1.fastq -O clean_R2.fastq -j fastp_${id}.json -h fastp_${id}.html -w 8
+    fastp -i ${reads[0]} -I ${reads[1]} -o clean_R1.fastq -O clean_R2.fastq -j fastp_${id}.json -h fastp_${id}.html -w ${threads}
     """
 
     output:
