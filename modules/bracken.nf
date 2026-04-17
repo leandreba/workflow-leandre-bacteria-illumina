@@ -8,10 +8,12 @@ process bracken {
     script:
     
     """
-    bracken -i ${kraken_report} -d $projectDir/db/kraken/ -o ${id}.output -w ${id}_bracken.report -r 150
+    bracken -i ${kraken_report} -d $projectDir/db/kraken/ -o ${id}.output -w ${id}_bracken.report -r 150 > /dev/null
+    awk -F'\t' '{print \$6 "\t" \$1}' *.output | sort -nr | head -1 | cut -f2 | tr -d '\n'
     """
 
     output:
-    tuple val(id), path("*.report"), path("*.output")
+    tuple val(id), path("*.report"), path("*.output"), emit : reports
+    stdout emit : species_identity
 
 }

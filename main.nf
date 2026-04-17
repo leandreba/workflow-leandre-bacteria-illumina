@@ -8,6 +8,7 @@ include {bracken} from './modules/bracken.nf'
 include {spades} from './modules/spades.nf'
 
 include {amrfinder} from './modules/amrfinder.nf'
+include {mlst} from './modules/mlst.nf'
 
 //la base de notre worklfow on y appelle nos process
 workflow {
@@ -29,14 +30,15 @@ workflow {
     
     //On lance Kraken2 pour l'idenfication des reads
     kraken(clean_reads, params.threads)
-    kraken.out.view()
     bracken(kraken.out)
+    //bracken.out.species_identity.view()
 
     //On execute l'assemblage
     spades(clean_reads, params.threads, params.memory)
 
     //On execute amrfinder
     amrfinder(spades.out.results, params.threads)
+    mlst(spades.out.results, bracken.out.species_identity, params.threads)
 
     publish:
     fastqc_raw_output = fastqc_raw.out
@@ -44,12 +46,12 @@ workflow {
     fastqc_clean_output = fastqc_clean.out
 
     kraken_output = kraken.out
-    bracken_output = bracken.out
-
+    bracken_output = bracken.out.reports
 
     spades_output = spades.out.reports
     
     amrfinder_output = amrfinder.out
+    mlst_output = mlst.out
 
 }
 
@@ -81,5 +83,9 @@ output {
 
     amrfinder_output {
         path {id, amrfound -> "${id}"}
+    }
+
+    mlst_output {
+        path {id, mlst_report -> "${id}/mlst"}
     }
 }  
