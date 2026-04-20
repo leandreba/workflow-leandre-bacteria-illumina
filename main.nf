@@ -24,9 +24,6 @@ workflow {
     //on lance la première étape de qualité
     fastqc_raw(reads, params.threads)
     fastp(reads, params.threads)
-    fastp.out.mqc.view()
-    
-
 
     //On crée notre channel de reads cleans à partir de notre channel fastp
     clean_reads = fastp.out.clean_reads.map {id, clean_R1, clean_R2 -> tuple(id, [clean_R1, clean_R2])}
@@ -37,7 +34,6 @@ workflow {
     //On lance Kraken2 pour l'idenfication des reads
     kraken(clean_reads, params.threads)
     bracken(kraken.out.reports)
-    //bracken.out.species_identity.view()
 
     //On execute l'assemblage
     spades(clean_reads, params.threads, params.memory)
@@ -55,8 +51,7 @@ workflow {
     ch_multiqc = ch_multiqc.mix(kraken.out.mqc)
     ch_multiqc = ch_multiqc.mix(bracken.out.mqc)
     ch_multiqc = ch_multiqc.mix(amrfinder.out.mqc)
-
-    ch_multiqc.collect().view()
+    ch_multiqc = ch_multiqc.mix(mlst.out.mqc)
 
     multiqc(ch_multiqc.collect())
 
@@ -71,7 +66,7 @@ workflow {
     spades_output = spades.out.reports
     
     amrfinder_output = amrfinder.out.report
-    mlst_output = mlst.out
+    mlst_output = mlst.out.report
     virulencefinder_output = virulencefinder.out 
 
     multiqc_output = multiqc.out
@@ -108,7 +103,7 @@ output {
     }
 
     mlst_output {
-        path {id, mlst_report -> "${id}/mlst"}
+        path {id, mlst_report, mqc -> "${id}/mlst"}
     }
 
     virulencefinder_output {
