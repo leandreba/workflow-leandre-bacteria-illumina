@@ -52,6 +52,7 @@ workflow {
     ch_multiqc = ch_multiqc.mix(bracken.out.mqc)
     ch_multiqc = ch_multiqc.mix(amrfinder.out.mqc)
     ch_multiqc = ch_multiqc.mix(mlst.out.mqc)
+    ch_multiqc = ch_multiqc.mix(virulencefinder.out.mqc)
 
     multiqc(ch_multiqc.collect())
 
@@ -67,7 +68,7 @@ workflow {
     
     amrfinder_output = amrfinder.out.report
     mlst_output = mlst.out.report
-    virulencefinder_output = virulencefinder.out 
+    virulencefinder_output = virulencefinder.out.reports
 
     multiqc_output = multiqc.out
 }
@@ -99,11 +100,11 @@ output {
     }
 
     amrfinder_output {
-        path {id, amrfound, mqc-> "${id}"}
+        path {id, amrfound-> "${id}"}
     }
 
     mlst_output {
-        path {id, mlst_report, mqc -> "${id}/mlst"}
+        path {id, mlst_report -> "${id}"}
     }
 
     virulencefinder_output {

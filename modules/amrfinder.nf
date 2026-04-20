@@ -23,7 +23,7 @@ process amrfinder{
     """
 
     output:
-    tuple val(id), path("*_amrfound.tsv"), path("*_mqc.tsv"), emit : report
+    tuple val(id), path("*_amrfound.tsv"), emit : report
     path("*_mqc.tsv"), emit : mqc
 
 }
