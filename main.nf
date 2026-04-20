@@ -11,6 +11,8 @@ include {amrfinder} from './modules/amrfinder.nf'
 include {mlst} from './modules/mlst.nf'
 include {virulencefinder} from './modules/virulencefinder.nf'
 
+include {multiqc} from './modules/multiqc.nf'
+
 //la base de notre worklfow on y appelle nos process
 workflow {
     
@@ -22,6 +24,9 @@ workflow {
     //on lance la première étape de qualité
     fastqc_raw(reads, params.threads)
     fastp(reads, params.threads)
+    fastp.out.mqc.view()
+    
+
 
     //On crée notre channel de reads cleans à partir de notre channel fastp
     clean_reads = fastp.out.clean_reads.map {id, clean_R1, clean_R2 -> tuple(id, [clean_R1, clean_R2])}
@@ -31,7 +36,7 @@ workflow {
     
     //On lance Kraken2 pour l'idenfication des reads
     kraken(clean_reads, params.threads)
-    bracken(kraken.out)
+    bracken(kraken.out.reports)
     //bracken.out.species_identity.view()
 
     //On execute l'assemblage
@@ -42,12 +47,23 @@ workflow {
     mlst(spades.out.results, params.threads)
     virulencefinder(spades.out.results)
 
-    publish:
-    fastqc_raw_output = fastqc_raw.out
-    fastp_output = fastp.out.reports
-    fastqc_clean_output = fastqc_clean.out
+    //on crée le channel avec tous nos résultats
+    ch_multiqc = Channel.empty()
+    ch_multiqc = ch_multiqc.mix(fastqc_raw.out.mqc)
+    ch_multiqc = ch_multiqc.mix(fastp.out.mqc)
+    ch_multiqc = ch_multiqc.mix(fastqc_clean.out.mqc)
+    ch_multiqc = ch_multiqc.mix(kraken.out.mqc)
+    ch_multiqc = ch_multiqc.mix(bracken.out.mqc)
+    ch_multiqc.collect().view()
 
-    kraken_output = kraken.out
+    multiqc(ch_multiqc.collect())
+
+    publish:
+    fastqc_raw_output = fastqc_raw.out.reports
+    fastp_output = fastp.out.reports
+    fastqc_clean_output = fastqc_clean.out.reports
+
+    kraken_output = kraken.out.reports
     bracken_output = bracken.out.reports
 
     spades_output = spades.out.reports
@@ -55,6 +71,8 @@ workflow {
     amrfinder_output = amrfinder.out
     mlst_output = mlst.out
     virulencefinder_output = virulencefinder.out 
+
+    multiqc_output = multiqc.out
 }
 
 //dire ou ranger les outputs de nos process
@@ -93,5 +111,9 @@ output {
 
     virulencefinder_output {
         path {id, virulencefinder_txt, virulencefinder_tsv -> "${id}/virulencefinder"}
+    }
+
+    multiqc_output {
+        path {html, data -> ""}
     }
 }  

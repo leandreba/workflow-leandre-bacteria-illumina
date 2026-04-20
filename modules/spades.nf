@@ -11,10 +11,10 @@ process spades {
     script:
     
     """
-    spades.py -1 ${clean_reads[0]} -2 ${clean_reads[1]} -o spades --careful -t ${threads} -m ${memory}
+    spades.py -1 ${clean_reads[0]} -2 ${clean_reads[1]} -o ${id}_spades --careful -t ${threads} -m ${memory}
     """
 
     output:
-    tuple val(id), path("spades/spades.log"), path("spades/warnings.log"), emit : reports
-    tuple val(id), path("spades"), emit : results
+    tuple val(id), path("*_spades/spades.log"), path("*_spades/warnings.log"), emit : reports
+    tuple val(id), path("*_spades"), emit : results
 }

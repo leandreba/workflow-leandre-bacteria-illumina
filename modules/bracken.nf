@@ -15,5 +15,6 @@ process bracken {
     output:
     tuple val(id), path("*.report"), path("*.output"), emit : reports
     stdout emit : species_identity
+    path("*.report"), emit : mqc
 
 }

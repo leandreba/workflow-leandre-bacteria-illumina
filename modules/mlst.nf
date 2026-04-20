@@ -4,7 +4,6 @@ process mlst {
 
     input:
     tuple val(id), path(spades)
-    val(scheme)
     val(threads)
     
     script:

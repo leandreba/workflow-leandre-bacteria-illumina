@@ -13,7 +13,8 @@ process fastqc {
     """
 
     output:
-    tuple val(id) ,path("*_fastqc.html") , path("*_fastqc.zip") //au format tupple car sinon on doit declarer nos output 1 par 1 apres dans publish 
+    tuple val(id) ,path("*_fastqc.html") , path("*_fastqc.zip"), emit : reports //au format tupple car sinon on doit declarer nos output 1 par 1 apres dans publish 
+    path("*.{html,zip}"), emit : mqc
 }
 
 
