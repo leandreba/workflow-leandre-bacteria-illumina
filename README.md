@@ -1,4 +1,4 @@
-# Mon TFE v0.1.0
+# Mon TFE v1.0.0
 # Introduction
 Ce workflow est destiné à l'analyse de bactéries par séquençage Illumina.
 Son but premier est d'être utilisé dans des cas de santé publique, pouvoir fournir une analyse simple et rapide sur des bactèrie pathogènes et pouvoir vite prendre des mesures contre de potentiels épidémies. Le workflow permet l'identification des bactèries de ses gènes de résistances et de virulences, ainsi que son sequence type. 
