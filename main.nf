@@ -92,7 +92,7 @@ output {
     }
 
     bracken_output {
-        path {id, bracken_report, bracken_output -> "${id}/bracken"}
+        path {id, bracken_report, bracken_output, log -> "${id}/bracken"}
     }
 
     spades_output {
