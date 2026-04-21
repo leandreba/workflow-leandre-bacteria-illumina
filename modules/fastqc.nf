@@ -5,15 +5,16 @@ process fastqc {
 
     input:
     tuple val(id), path(reads)
-    
+    val(threads)
     script:
     
     """
-    fastqc --memory 2000 -t 8 '${reads[0]}' '${reads[1]}' 
+    fastqc --memory 2000 -t ${threads} '${reads[0]}' '${reads[1]}' 
     """
 
     output:
-    tuple val(id) ,path("*_fastqc.html") , path("*_fastqc.zip") //au format tupple car sinon on doit declarer nos output 1 par 1 apres dans publish 
+    tuple val(id) ,path("*_fastqc.html") , path("*_fastqc.zip"), emit : reports //au format tupple car sinon on doit declarer nos output 1 par 1 apres dans publish 
+    path("*.{html,zip}"), emit : mqc
 }
 
 
