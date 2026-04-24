@@ -29,10 +29,13 @@ mkdir db
 cd db
 
 #Kraken2
+mkdir kraken
+cd kraken
+
 wget -c https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20260226.tar.gz
 tar -xvf *.tar.gz
 rm *.tar.gz
-mv * kraken
+cd ..
 
 cd ..
 
