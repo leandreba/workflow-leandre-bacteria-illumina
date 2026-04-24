@@ -35,3 +35,12 @@ rm *.tar.gz
 mv * kraken
 
 cd ..
+
+#####################################################################################
+#Création d'un script dans le $PATH servant de raccourci pour l'execution du workflow
+# prend aussi en compte le choix du profile.
+#####################################################################################
+echo '#!/bin/sh
+nextflow run '"$(pwd)"'/main.nf -profile '"$1"' "$@"' > /usr/local/bin/workflow-leandre-bacteria-illumina
+
+chmod +x /usr/local/bin/workflow-leandre-bacteria-illumina
