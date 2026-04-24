@@ -20,8 +20,6 @@ apptainer pull docker://genomicepidemiology/virulencefinder:3.2.0
 
 apptainer pull docker://multiqc/multiqc:v1.33
 
-
-
 cd ..
 
 #####################################################################################
@@ -37,6 +35,15 @@ cd kraken
 wget -c https://genome-idx.s3.amazonaws.com/kraken/k2_standard_08_GB_20260226.tar.gz
 tar -xvf *.tar.gz
 rm *.tar.gz
-mv * kraken
+cd ..
 
 cd ..
+
+#####################################################################################
+#Création d'un script dans le $PATH servant de raccourci pour l'execution du workflow
+# prend aussi en compte le choix du profile.
+#####################################################################################
+echo '#!/bin/sh
+nextflow run '"$(pwd)"'/main.nf -profile '"$1"' "$@"' > /usr/local/bin/workflow-leandre-bacteria-illumina
+
+chmod +x /usr/local/bin/workflow-leandre-bacteria-illumina

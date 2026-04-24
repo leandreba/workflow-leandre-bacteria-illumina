@@ -22,22 +22,21 @@ workflow {
     reads = channel.fromFilePairs("${params.input}/*_R{1,2}_001*")
     
     //on lance la première étape de qualité
-    fastqc_raw(reads, params.threads)
+    fastqc_raw(reads, params.fastqc_threads, params.fastqc_memory)
     fastp(reads, params.threads)
 
     //On crée notre channel de reads cleans à partir de notre channel fastp
     clean_reads = fastp.out.clean_reads.map {id, clean_R1, clean_R2 -> tuple(id, [clean_R1, clean_R2])}
 
     //on faitun nouveau fastqc à partir de nos reads clean
-    fastqc_clean(clean_reads, params.threads)
+    fastqc_clean(clean_reads, params.fastqc_threads, params.fastqc_memory)
     
     //On lance Kraken2 pour l'idenfication des reads
     kraken(clean_reads, params.threads)
-    kraken.out.reports.view()
     bracken(kraken.out.reports)
 
     //On execute l'assemblage
-    spades(clean_reads, params.threads, params.memory)
+    spades(clean_reads, params.spades_threads, params.spades_memory)
 
     //On execute amrfinder
     amrfinder(spades.out.results, params.threads)
@@ -65,7 +64,7 @@ workflow {
     kraken_output = kraken.out.reports
     bracken_output = bracken.out.reports
 
-    spades_output = spades.out.reports
+    spades_output = spades.out.report
     
     amrfinder_output = amrfinder.out.report
     mlst_output = mlst.out.report
@@ -97,11 +96,11 @@ output {
     }
 
     spades_output {
-        path {id, sapdes_log , warnings_log -> "${id}"}
+        path {id, sapdes_log -> "${id}"}
     }
 
     amrfinder_output {
-        path {id, amrfound-> "${id}"}
+        path {id, amrfound -> "${id}"}
     }
 
     mlst_output {

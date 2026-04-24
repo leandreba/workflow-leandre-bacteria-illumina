@@ -15,6 +15,6 @@ process spades {
     """
 
     output:
-    tuple val(id), path("*_spades/spades.log"), path("*_spades/warnings.log"), emit : reports
+    tuple val(id), path("*_spades/spades.log"), emit : report
     tuple val(id), path("*_spades"), emit : results
 }
