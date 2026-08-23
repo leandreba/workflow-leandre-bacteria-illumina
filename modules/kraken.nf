@@ -9,7 +9,7 @@ process kraken {
     script:
     
     """
-    k2 classify ${clean_reads[0]} ${clean_reads[1]} --db $projectDir/db/kraken/ --threads ${threads}  --report ${id}_kraken.report --output ${id}_kraken.output 
+    k2 classify ${clean_reads[0]} ${clean_reads[1]} --paired --db $projectDir/db/kraken/ --threads ${threads}  --report ${id}_kraken.report --output ${id}_kraken.output 
     """
 
     output:
