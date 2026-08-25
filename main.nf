@@ -18,9 +18,12 @@ workflow {
     
     main:
 
-    //on crée notre channel de reads bruts
-    reads = channel.fromFilePairs("${params.input}/*_R{1,2}_001*")
-    
+    //on crée plusieurs channells qui detecte les differents reads bruts en fonction de leurs annotaions (Illumina classiques ou SRA)
+    illumina_reads = channel.fromFilePairs("${params.input}/*_R{1,2}_001*")
+    sra_reads = channel.fromFilePairs("${params.input}/*_{1,2}.fastq")
+
+    reads= illumina_reads.mix(sra_reads)
+
     //on lance la première étape de qualité
     fastqc_raw(reads, params.fastqc_threads, params.fastqc_memory)
     fastp(reads, params.threads)
